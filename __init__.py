@@ -62,5 +62,15 @@ def decrypt_message(key, token):
     except Exception as e:
         return f"Erreur : {str(e)}"
 
+@app.route('/admin/keys')
+def show_keys():
+    conn = sqlite3.connect("crypto.db")
+    c = conn.cursor()
+    c.execute("SELECT id, key, created_at FROM keys ORDER BY id DESC")
+    data = c.fetchall()
+    conn.close()
+    return render_template("keys_list.html", keys=data)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
