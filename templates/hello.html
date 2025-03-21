@@ -1,3 +1,98 @@
-<!doctype html>
-<title>CryptoPython</title>
-<h1>Bienvue dans votre atelier CryptoPython !</h1>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CryptoFlask</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #ffffff);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .route-box {
+            background-color: #f4f4f4;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #333;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bienvenue sur CryptoFlask 🔐</h1>
+        <p>Voici les routes disponibles pour chiffrer et déchiffrer vos données :</p>
+
+        <div class="route-box">
+            GET <a href="/generate_key">/generate_key</a><br>
+            Génère une clé Fernet aléatoire
+        </div>
+
+        <div class="route-box">
+            GET /encrypt/&lt;valeur&gt;<br>
+            Chiffre la valeur avec la clé serveur
+        </div>
+
+        <div class="route-box">
+            GET /decrypt/&lt;valeur_chiffrée&gt;<br>
+            Déchiffre la valeur avec la clé serveur
+        </div>
+
+        <div class="route-box">
+            GET /encrypt_key/&lt;clé&gt;/&lt;valeur&gt;<br>
+            Chiffre avec votre propre clé
+        </div>
+
+        <div class="route-box">
+            GET /decrypt_key/&lt;clé&gt;/&lt;valeur_chiffrée&gt;<br>
+            Déchiffre avec votre propre clé
+        </div>
+
+        <div class="footer">
+            Projet Flask - Cryptographie | Made with ❤️
+        </div>
+    </div>
+</body>
+</html>
