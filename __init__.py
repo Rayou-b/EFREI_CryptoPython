@@ -1,89 +1,36 @@
 from cryptography.fernet import Fernet
-from datetime import datetime
 from flask import Flask, render_template_string, render_template, jsonify
 from flask import render_template
 from flask import json
-
 from urllib.request import urlopen
 import sqlite3
 
-def init_db():
-    conn = sqlite3.connect("crypto.db")
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS keys (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            key TEXT NOT NULL,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    conn.commit()
-    conn.close()
 
-init_db()  # Appelé au lancement de l'app
+app = Flask(name)
 
-                                                                                                                                       
-app = Flask(__name__)                                                                                                                  
-                                                                                                                                       
 @app.route('/')
-def hello_world():
-    return render_template('hello.html') #Comm2
+def home():
+    return "<h1>Bienvenue sur l'API CryptoPython</h1>"
 
-key = Fernet.generate_key()
-f = Fernet(key)
-
-
-@app.route('/encrypt/<string:valeur>')
-def encryptage(valeur):
-    valeur_bytes = valeur.encode()  # Conversion str -> bytes
-    token = f.encrypt(valeur_bytes)  # Encrypt la valeur
-    return f"Valeur encryptée : {token.decode()}"  # Retourne le token en str
-
-@app.route('/decrypt/<string:valeur>')
-def decryptage(valeur):
-    valeur_bytes = valeur.encode()  # Conversion str -> bytes
+@app.route('/encrypt/<string:key>/<string:message>')
+def encrypt_message(key, message):
     try:
-        decrypted = f.decrypt(valeur_bytes)  # Déchiffrement
-        return f"Valeur décryptée : {decrypted.decode()}"  # Retourne en str
+        key_bytes = key.encode()  # Convertir la clé en bytes
+        f = Fernet(key_bytes)  # Créer un objet Fernet avec cette clé
+        encrypted = f.encrypt(message.encode())  # Chiffrer le message
+        return encrypted.decode()  # Retourne le message chiffré
     except Exception as e:
-        return f"Erreur lors du décryptage : {str(e)}"
+        return f"Erreur : {str(e)}"
 
-@app.route('/generate_key')
-def generate_key():
-    new_key = Fernet.generate_key().decode()
-
-    conn = sqlite3.connect("crypto.db")
-    c = conn.cursor()
-    c.execute("INSERT INTO keys (key) VALUES (?)", (new_key,))
-    conn.commit()
-    conn.close()
-
-    return render_template("generate_key.html", key=new_key)
-
-
-
-@app.route('/encrypt_key/<key>/<text>')
-def encrypt_with_key(key, text):
+@app.route('/decrypt/<string:key>/<string:token>')
+def decrypt_message(key, token):
     try:
-        fernet_user = Fernet(key.encode())
-        token = fernet_user.encrypt(text.encode()).decode()
-        return f"Valeur encryptée avec votre clé : {token}"
+        key_bytes = key.encode()  # Convertir la clé en bytes
+        f = Fernet(key_bytes)  # Créer un objet Fernet avec cette clé
+        decrypted = f.decrypt(token.encode())  # Déchiffrer le message
+        return decrypted.decode()  # Retourne le message déchiffré
     except Exception as e:
-        return f"Erreur : Clé invalide ? Détail : {str(e)}"
+        return f"Erreur : {str(e)}"
 
-
-@app.route('/decrypt_key/<key>/<token>')
-def decrypt_with_key(key, token):
-    try:
-        fernet_user = Fernet(key.encode())
-        decrypted = fernet_user.decrypt(token.encode()).decode()
-        return f"Valeur décryptée avec votre clé : {decrypted}"
-    except Exception as e:
-        return f"Erreur lors du décryptage : {str(e)}"
-
-
-
-
-                                                                                                                                                     
-if __name__ == "__main__":
-  app.run(debug=True)
+if name == "main":
+    app.run(debug=True)
