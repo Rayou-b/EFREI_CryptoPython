@@ -1,10 +1,27 @@
 from cryptography.fernet import Fernet
+from datetime import datetime
 from flask import Flask, render_template_string, render_template, jsonify
 from flask import render_template
 from flask import json
 
 from urllib.request import urlopen
 import sqlite3
+
+def init_db():
+    conn = sqlite3.connect("crypto.db")
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS keys (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            key TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_db()  # Appelé au lancement de l'app
+
                                                                                                                                        
 app = Flask(__name__)                                                                                                                  
                                                                                                                                        
@@ -33,7 +50,16 @@ def decryptage(valeur):
 
 @app.route('/generate_key')
 def generate_key():
-    return f"Votre clé : {Fernet.generate_key().decode()}"
+    new_key = Fernet.generate_key().decode()
+
+    conn = sqlite3.connect("crypto.db")
+    c = conn.cursor()
+    c.execute("INSERT INTO keys (key) VALUES (?)", (new_key,))
+    conn.commit()
+    conn.close()
+
+    return render_template("generate_key.html", key=new_key)
+
 
 
 @app.route('/encrypt_key/<key>/<text>')
