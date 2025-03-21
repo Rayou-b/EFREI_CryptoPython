@@ -2,6 +2,7 @@ from cryptography.fernet import Fernet
 from flask import Flask, render_template_string, render_template, jsonify
 from flask import render_template
 from flask import json
+
 from urllib.request import urlopen
 import sqlite3
                                                                                                                                        
@@ -14,19 +15,22 @@ def hello_world():
 key = Fernet.generate_key()
 f = Fernet(key)
 
+
 @app.route('/encrypt/<string:valeur>')
 def encryptage(valeur):
     valeur_bytes = valeur.encode()  # Conversion str -> bytes
     token = f.encrypt(valeur_bytes)  # Encrypt la valeur
     return f"Valeur encryptée : {token.decode()}"  # Retourne le token en str
 
-@app.route("/decrypt/<encrypted_text>")
-def decrypt(encrypted_text):
+@app.route('/decrypt/<string:valeur>')
+def decryptage(valeur):
+    valeur_bytes = valeur.encode()  # Conversion str -> bytes
     try:
-        decrypted = fernet.decrypt(encrypted_text.encode()).decode()
-        return {"decrypted": decrypted}
+        decrypted = f.decrypt(valeur_bytes)  # Déchiffrement
+        return f"Valeur décryptée : {decrypted.decode()}"  # Retourne en str
     except Exception as e:
-        return {"error": "Décryptage échoué", "details": str(e)}
+        return f"Erreur lors du décryptage : {str(e)}"
+
 
 
                                                                                                                                                      
