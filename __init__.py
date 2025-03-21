@@ -31,6 +31,31 @@ def decryptage(valeur):
     except Exception as e:
         return f"Erreur lors du décryptage : {str(e)}"
 
+@app.route('/generate_key')
+def generate_key():
+    return f"Votre clé : {Fernet.generate_key().decode()}"
+
+
+@app.route('/encrypt_key/<key>/<text>')
+def encrypt_with_key(key, text):
+    try:
+        fernet_user = Fernet(key.encode())
+        token = fernet_user.encrypt(text.encode()).decode()
+        return f"Valeur encryptée avec votre clé : {token}"
+    except Exception as e:
+        return f"Erreur : Clé invalide ? Détail : {str(e)}"
+
+
+@app.route('/decrypt_key/<key>/<token>')
+def decrypt_with_key(key, token):
+    try:
+        fernet_user = Fernet(key.encode())
+        decrypted = fernet_user.decrypt(token.encode()).decode()
+        return f"Valeur décryptée avec votre clé : {decrypted}"
+    except Exception as e:
+        return f"Erreur lors du décryptage : {str(e)}"
+
+
 
 
                                                                                                                                                      
